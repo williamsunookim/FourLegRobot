@@ -131,7 +131,6 @@ def trot_forward(step):
             y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
 
             theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X - x_move, b=DEFAULT_Y - y_move)
-            print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}')
             
             # Front Left (FL) and Back Right (BR)
             p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
@@ -150,7 +149,6 @@ def trot_forward(step):
             y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
 
             theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X - x_move, b=DEFAULT_Y - y_move)
-            print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}')
             
             # Front Left (FL) and Back Right (BR)
             p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
@@ -189,6 +187,85 @@ def trot_forward(step):
             x_move = x_diff - i
             y_move = b1 * math.sin(phase)
             theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X-x_move, b= DEFAULT_Y+ y_move)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            for i in range(10):
+                p.stepSimulation()
+            time.sleep(step_time)
+
+def trot_backward(step):
+    x_diff = 0.1  # 다리를 들어 올릴 최대 높이
+    b1 = 0.05  # 전방으로 움직일 거리
+    step_time = 0.01  # 스텝 시간
+    cycle_count = 20  # 한 번의 스텝을 나누는 횟수
+
+    if step == 1:
+        for i in np.linspace(0, x_diff, cycle_count):
+            phase = i * math.pi/x_diff  # 0에서 pi까지의 구간을 sin으로 나눔
+            x_move = i  # sin 곡선을 따라 다리 높이 설정
+            y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
+
+            theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X + x_move, b=DEFAULT_Y - y_move)
+            
+            # Front Left (FL) and Back Right (BR)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            for i in range(10):
+                p.stepSimulation()
+            time.sleep(step_time)
+    elif step % 2 == 1:
+        for i in np.linspace(0, x_diff, cycle_count):
+            phase = i * math.pi/x_diff  # 0에서 pi까지의 구간을 sin으로 나눔
+            x_move = i  # sin 곡선을 따라 다리 높이 설정
+            y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
+
+            theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X + x_move, b=DEFAULT_Y - y_move)
+            
+            # Front Left (FL) and Back Right (BR)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['back_right_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            x_move = x_diff - i  # sin 곡선을 따라 다리 높이 설정
+            y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
+            theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X + x_move, b=DEFAULT_Y + y_move)
+            p.setJointMotorControl2(robot_id, joints['front_right_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['front_right_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            p.setJointMotorControl2(robot_id, joints['back_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['back_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+            for i in range(10):
+                p.stepSimulation()
+            time.sleep(step_time)
+    elif step % 2 == 0:
+    # Step 2: 반대편 다리 교체
+        for i in np.linspace(0, x_diff, cycle_count):
+            phase = i *math.pi/x_diff  # 0에서 pi까지의 구간을 sin으로 나눔
+            x_move = i  # sin 곡선을 따라 다리 높이 설정
+            y_move = b1 * math.sin(phase)  # sin 곡선을 따라 전방 이동
+
+            theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X + x_move, b= DEFAULT_Y- y_move)
+            
+            # Front Right (FR) and Back Left (BL)
+            p.setJointMotorControl2(robot_id, joints['front_right_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['front_right_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            p.setJointMotorControl2(robot_id, joints['back_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
+            p.setJointMotorControl2(robot_id, joints['back_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
+
+            x_move = x_diff - i
+            y_move = b1 * math.sin(phase)
+            theta1, theta2 = cal(l_1=l_1, l_2=l_2, a=DEFAULT_X + x_move, b= DEFAULT_Y+ y_move)
             p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[1]], p.POSITION_CONTROL, -theta1)
             p.setJointMotorControl2(robot_id, joints['front_left_' + joint_names[2]], p.POSITION_CONTROL, theta2)
 
@@ -331,7 +408,8 @@ def sin_step_backward():
         time.sleep(sleep)
 
 target = 0
-step = 0
+forward_step = 0
+backward_step = 0
 # 시뮬레이션 루프
 while True:
     keys = p.getKeyboardEvents()  # 키보드 입력 감지
@@ -339,12 +417,17 @@ while True:
     # 위 화살표: 앞으로 이동
     if p.B3G_UP_ARROW in keys and keys[p.B3G_UP_ARROW] & p.KEY_IS_DOWN:
         #box_step_forward()
-        sin_step_forward()
+        #sin_step_forward()
+        forward_step+=1
+        trot_forward(forward_step)
 
     # 아래 화살표: 뒤로 이동
     elif p.B3G_DOWN_ARROW in keys and keys[p.B3G_DOWN_ARROW] & p.KEY_IS_DOWN:
         #box_step_backward()
-        sin_step_backward()
+        #sin_step_backward()
+        backward_step += 1
+        trot_backward(backward_step)
+        
 
     elif p.B3G_LEFT_ARROW in keys and keys[p.B3G_LEFT_ARROW] & p.KEY_IS_DOWN:
         sin_step_left()
@@ -352,13 +435,11 @@ while True:
     elif p.B3G_RIGHT_ARROW in keys and keys[p.B3G_RIGHT_ARROW] & p.KEY_IS_DOWN:
         sin_step_right()
     # 'T' 키로 trot 함수 실행
-    if ord('t') in keys and keys[ord('t')] & p.KEY_IS_DOWN:
-        step += 1
-        trot_forward(step)
     else:
         # print('theta1:', math.degrees(theta_1))
         # print("theta2:",math.degrees(theta_2))
-        step = 0
+        forward_step=0
+        backward_step = 0
         target_position_hip = default_position_hip  # 힙 관절 각도 초기화
         target_position_knee = default_position_knee  # 무릎 관절 각도 초기화
         for j in range(4):
