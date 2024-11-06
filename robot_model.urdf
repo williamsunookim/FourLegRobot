@@ -25,6 +25,30 @@
         </collision>
     </link>
 
+    <!-- ABAD 링크 추가 -->
+    <link name="abad_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
+            <geometry>
+                <cylinder length="0.05" radius="0.02" />
+            </geometry>
+            <material name="yellow">
+                <color rgba="1 1 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.1 0" rpy="1.5708 0 0" />
+            <geometry>
+                <cylinder length="0.05" radius="0.02" />
+            </geometry>
+        </collision>
+    </link>
+
     <!-- 첫 번째 다리 링크 (힙) -->
     <link name="hip_link">
         <inertial>
@@ -68,14 +92,23 @@
         <collision>
             <origin xyz="0 0 -0.3" rpy="0 0 0" />
             <geometry>
-                <cylinder length="0.05" radius="0.04" /> <!-- 확대된 충돌 영역 -->
+                <cylinder length="0.05" radius="0.04" />
             </geometry>
         </collision>
     </link>
 
-    <!-- 첫 번째 관절 (힙) -->
-    <joint name="hip_joint" type="revolute">
+    <!-- ABAD 관절 추가 -->
+    <joint name="abad_joint" type="revolute">
         <parent link="base_link" />
+        <child link="abad_link" />
+        <origin xyz="0 -0.095 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
+    </joint>
+
+    <!-- 수정된 힙 관절 (이제 abad_link에 연결) -->
+    <joint name="hip_joint" type="revolute">
+        <parent link="abad_link" />
         <child link="hip_link" />
         <origin xyz="0 0 0" rpy="0 0 0" />
         <axis xyz="0 1 0" />
