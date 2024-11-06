@@ -21,30 +21,26 @@ camera_target_position = [0, 0, 1]  # 카메라가 바라볼 위치 (로봇 위�
 p.resetDebugVisualizerCamera(camera_distance, camera_yaw, camera_pitch, camera_target_position)
 
 # 로봇 모델 로드 (robot_model.urdf 파일)
-robot_id = p.loadURDF("robot_model.urdf", [0, 0, 1.0], useFixedBase=True)  # z축 이동을 허용하도록 로드
+robot_id = p.loadURDF("robot_model.urdf", [0, 0, 0.7], useFixedBase=True)  # z축 이동을 허용하도록 로드
+
+joints = {}
+joint_names = ['abad_joint', 'hip_joint', 'knee_joint']
+leg_prefixes = ['front_left', 'front_right', 'back_left', 'back_right']
 
 # 로봇의 모든 관절 ID와 이름 확인
 print("로봇의 모든 관절 정보:")
-joint1_id = None
-joint2_id = None
-abad_id = None
+# joint1_id = None
+# joint2_id = None
+# abad_id = None
 for i in range(p.getNumJoints(robot_id)):
     info = p.getJointInfo(robot_id, i)
     joint_name = info[1].decode('utf-8')
     print(f"Joint {i}: {joint_name}")  # 각 관절의 이름과 ID 출력
 
-    if joint_name == "hip_joint":
-        joint1_id = i
-    elif joint_name == "knee_joint":
-        joint2_id = i
-    elif joint_name == 'abad_joint':
-        abad_id = i
+    joints[joint_name] = i
 
-# 관절 ID가 제대로 설정되었는지 확인
-if joint1_id is None or joint2_id is None or abad_id is None:
-    print("Error: 관절 ID를 찾을 수 없습니다.")
-    p.disconnect()
-    exit(1)
+print(f'joints: {joints}')
+
 def cal(l_1, l_2, a, b):
     theta_2 = math.acos((a**2 + b**2  - l_1*l_1 - l_2*l_2)/(2*l_1*l_2))
     k_2 = l_2 * math.cos(theta_2) + l_1
@@ -125,12 +121,13 @@ def sin_step_left():
         target_position_hip=-theta1
         target_position_knee=theta2
         #print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}, theta3: {math.degrees(theta3)}')
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=abad_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
+        for j in range(4):
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
         
         for i in range(10):
             p.stepSimulation()
@@ -140,12 +137,13 @@ def sin_step_left():
         target_position_hip=-theta1
         target_position_knee=theta2
         #print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}, theta3: {math.degrees(theta3)}')
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=abad_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
+        for j in range(4):
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
         
         for i in range(10):
             p.stepSimulation()
@@ -159,12 +157,14 @@ def sin_step_right():
         target_position_hip=-theta1
         target_position_knee=theta2
         #print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}, theta3: {math.degrees(theta3)}')
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=abad_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
+        for j in range(4):
+             
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
         
         for i in range(10):
             p.stepSimulation()
@@ -174,12 +174,14 @@ def sin_step_right():
         target_position_hip=-theta1
         target_position_knee=theta2
         #print(f'theta1: {math.degrees(theta1)}, theta2: {math.degrees(theta2)}, theta3: {math.degrees(theta3)}')
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=abad_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
+        for j in range(4):
+             
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=-theta3)
         
         for i in range(10):
             p.stepSimulation()
@@ -193,10 +195,11 @@ def sin_step_forward():
         theta_1, theta_2 = cal(l_1, l_2, DEFAULT_X-(a-i), DEFAULT_Y - b1 * math.sin(i * math.pi / a))
         target_position_hip = -theta_1  # 힙 관절 각도를 전진 방향으로 설정
         target_position_knee = theta_2  # 무릎 관절 각도를 전진 방향으로 설정
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+        for j in range(4):
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
         for i in range(10):
             p.stepSimulation()
         time.sleep(sleep)
@@ -204,10 +207,11 @@ def sin_step_forward():
         theta_1, theta_2 = cal(l_1, l_2, DEFAULT_X-(a-i), DEFAULT_Y + b2 * math.sin(i * math.pi / a))
         target_position_hip = -theta_1  # 힙 관절 각도를 전진 방향으로 설정
         target_position_knee = theta_2  # 무릎 관절 각도를 전진 방향으로 설정
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+        for j in range(4):
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
         for i in range(10):
             p.stepSimulation()
         time.sleep(sleep)
@@ -218,10 +222,11 @@ def sin_step_backward():
         theta_1, theta_2 = cal(l_1, l_2, DEFAULT_X+i, DEFAULT_Y - b1 * math.sin(i * math.pi / a))
         target_position_hip = -theta_1  # 힙 관절 각도를 전진 방향으로 설정
         target_position_knee = theta_2  # 무릎 관절 각도를 전진 방향으로 설정
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+        for j in range(4):
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
         for i in range(10):
             p.stepSimulation()
         time.sleep(sleep)
@@ -229,10 +234,11 @@ def sin_step_backward():
         theta_1, theta_2 = cal(l_1, l_2, DEFAULT_X+i, DEFAULT_Y + b2 * math.sin(i * math.pi / a))
         target_position_hip = -theta_1  # 힙 관절 각도를 전진 방향으로 설정
         target_position_knee = theta_2  # 무릎 관절 각도를 전진 방향으로 설정
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+        for j in range(4):
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+            p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
         for i in range(10):
             p.stepSimulation()
         time.sleep(sleep)
@@ -257,64 +263,20 @@ while True:
 
     elif p.B3G_RIGHT_ARROW in keys and keys[p.B3G_RIGHT_ARROW] & p.KEY_IS_DOWN:
         sin_step_right()
-        
-        
-
-    # 스페이스 바: 점프
-    elif p.B3G_SPACE in keys and keys[p.B3G_SPACE] & p.KEY_IS_DOWN:
-        a_list = [0, 0]
-        b_list = [0.3 * (2 ** (1/2))- 0.1, 0.3 * (2 ** (1/2))]
-        
-        theta_1, theta_2 = cal(l_1, l_2, a_list[0], b_list[0])
-        # print('theta1:', math.degrees(theta_1))
-        # print("theta2:",math.degrees(theta_2))
-        target_position_hip = -theta_1  # 힙 관절 각도를 전진 방향으로 설정
-        target_position_knee = theta_2  # 무릎 관절 각도를 전진 방향으로 설정
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                        controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        for i in range(100):
-            p.stepSimulation()
-            time.sleep(1/240)
-        time.sleep(1.0 / 10.0)
-        target_position_hip = default_position_hip  # 힙 관절 각도 초기화
-        target_position_knee = default_position_knee  # 무릎 관절 각도 초기화
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        for i in range(10):
-            p.stepSimulation()
-            time.sleep(1/100)
-        time.sleep(1/240)
-        
-
-
-    # 키를 떼면 정지 위치로
-    # elif (p.B3G_UP_ARROW in keys and keys[p.B3G_UP_ARROW] & p.KEY_WAS_RELEASED) or \
-    #      (p.B3G_DOWN_ARROW in keys and keys[p.B3G_DOWN_ARROW] & p.KEY_WAS_RELEASED) or \
-    #      (p.B3G_SPACE in keys and keys[p.B3G_SPACE] & p.KEY_WAS_RELEASED):
     else:
         # print('theta1:', math.degrees(theta_1))
         # print("theta2:",math.degrees(theta_2))
         target_position_hip = default_position_hip  # 힙 관절 각도 초기화
         target_position_knee = default_position_knee  # 무릎 관절 각도 초기화
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
-        p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=abad_id,
+        for j in range(4):
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+                                controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+                p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
                             controlMode=p.POSITION_CONTROL, targetPosition=0)
+                
         
-        
-        
-
-    # 각 모터(관절)에 목표 위치 지정
-    p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint1_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
-    p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joint2_id,
-                            controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
 
     # 시뮬레이션 진행
     p.stepSimulation()

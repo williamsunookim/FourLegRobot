@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="quadruped_robot">
 
-    <!-- 로봇의 베이스 링크 -->
+    <!-- Base Link -->
     <link name="base_link">
         <inertial>
             <origin xyz="0 0 0" />
@@ -11,7 +11,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="0.15 0.15 0.1" />
+                <box size="0.3 0.3 0.1" />
             </geometry>
             <material name="blue">
                 <color rgba="0 0 1 1" />
@@ -25,8 +25,8 @@
         </collision>
     </link>
 
-    <!-- ABAD 링크 추가 -->
-    <link name="abad_link">
+    <!-- Front Left Leg -->
+    <link name="front_left_abad_link">
         <inertial>
             <origin xyz="0 0 0" />
             <mass value="0.3" />
@@ -41,23 +41,22 @@
                 <color rgba="1 1 0 1" />
             </material>
         </visual>
-        <collision>
-            <origin xyz="0 -0.1 0" rpy="1.5708 0 0" />
-            <geometry>
-                <cylinder length="0.05" radius="0.02" />
-            </geometry>
-        </collision>
     </link>
-
-    <!-- 첫 번째 다리 링크 (힙) -->
-    <link name="hip_link">
+    <joint name="front_left_abad_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="front_left_abad_link" />
+        <origin xyz="0.1 0.1 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
+    </joint>
+    <link name="front_left_hip_link">
         <inertial>
             <origin xyz="0 0 0" />
             <mass value="0.5" />
             <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05" />
         </inertial>
         <visual>
-            <origin xyz="0 0 -0.15" rpy="0 0 0" />
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
             <geometry>
                 <cylinder length="0.3" radius="0.03" />
             </geometry>
@@ -66,22 +65,27 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 -0.15" rpy="0 0 0" />
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
             <geometry>
                 <cylinder length="0.3" radius="0.03" />
             </geometry>
         </collision>
     </link>
-
-    <!-- 두 번째 다리 링크 (무릎) -->
-    <link name="knee_link">
+    <joint name="front_left_hip_joint" type="revolute">
+        <parent link="front_left_abad_link" />
+        <child link="front_left_hip_link" />
+        <origin xyz="0 0.02 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+    <link name="front_left_knee_link">
         <inertial>
             <origin xyz="0 0 0" />
             <mass value="0.3" />
             <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
         </inertial>
         <visual>
-            <origin xyz="0 0 -0.15" rpy="0 0 0" />
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
             <geometry>
                 <cylinder length="0.3" radius="0.03" />
             </geometry>
@@ -90,36 +94,265 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 -0.3" rpy="0 0 0" />
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
             <geometry>
-                <cylinder length="0.05" radius="0.04" />
+                <cylinder length="0.3" radius="0.03" />
             </geometry>
         </collision>
     </link>
-
-    <!-- ABAD 관절 추가 -->
-    <joint name="abad_joint" type="revolute">
-        <parent link="base_link" />
-        <child link="abad_link" />
-        <origin xyz="0 -0.095 0" rpy="0 0 0" />
-        <axis xyz="1 0 0" />
-        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
-    </joint>
-
-    <!-- 수정된 힙 관절 (이제 abad_link에 연결) -->
-    <joint name="hip_joint" type="revolute">
-        <parent link="abad_link" />
-        <child link="hip_link" />
-        <origin xyz="0 0 0" rpy="0 0 0" />
+    <joint name="front_left_knee_joint" type="revolute">
+        <parent link="front_left_hip_link" />
+        <child link="front_left_knee_link" />
+        <origin xyz="0 0.02 -0.3" rpy="0 0 0" />
         <axis xyz="0 1 0" />
         <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
     </joint>
 
-    <!-- 두 번째 관절 (무릎) -->
-    <joint name="knee_joint" type="revolute">
-        <parent link="hip_link" />
-        <child link="knee_link" />
-        <origin xyz="0 0 -0.3" rpy="0 0 0" />
+    <!-- Front Right Leg -->
+    <link name="front_right_abad_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
+            <geometry>
+                <cylinder length="0.05" radius="0.02" />
+            </geometry>
+            <material name="yellow">
+                <color rgba="1 1 0 1" />
+            </material>
+        </visual>
+    </link>
+    <joint name="front_right_abad_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="front_right_abad_link" />
+        <origin xyz="0.1 -0.1 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
+    </joint>
+    <link name="front_right_hip_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.5" />
+            <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="green">
+                <color rgba="0 1 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="front_right_hip_joint" type="revolute">
+        <parent link="front_right_abad_link" />
+        <child link="front_right_hip_link" />
+        <origin xyz="0 -0.02 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+    <link name="front_right_knee_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="front_right_knee_joint" type="revolute">
+        <parent link="front_right_hip_link" />
+        <child link="front_right_knee_link" />
+        <origin xyz="0 -0.02 -0.3" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+
+    <!-- Back Left Leg -->
+    <link name="back_left_abad_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
+            <geometry>
+                <cylinder length="0.05" radius="0.02" />
+            </geometry>
+            <material name="yellow">
+                <color rgba="1 1 0 1" />
+            </material>
+        </visual>
+    </link>
+    <joint name="back_left_abad_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="back_left_abad_link" />
+        <origin xyz="-0.1 0.1 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
+    </joint>
+    <link name="back_left_hip_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.5" />
+            <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="green">
+                <color rgba="0 1 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="back_left_hip_joint" type="revolute">
+        <parent link="back_left_abad_link" />
+        <child link="back_left_hip_link" />
+        <origin xyz="0 0.02 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+    <link name="back_left_knee_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="back_left_knee_joint" type="revolute">
+        <parent link="back_left_hip_link" />
+        <child link="back_left_knee_link" />
+        <origin xyz="0 0.02 -0.3" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+
+    <!-- Back Right Leg -->
+    <link name="back_right_abad_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
+            <geometry>
+                <cylinder length="0.05" radius="0.02" />
+            </geometry>
+            <material name="yellow">
+                <color rgba="1 1 0 1" />
+            </material>
+        </visual>
+    </link>
+    <joint name="back_right_abad_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="back_right_abad_link" />
+        <origin xyz="-0.1 -0.1 0" rpy="0 0 0" />
+        <axis xyz="1 0 0" />
+        <limit effort="1.0" velocity="1.0" lower="-1.5" upper="1.5" />
+    </joint>
+    <link name="back_right_hip_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.5" />
+            <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="green">
+                <color rgba="0 1 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="back_right_hip_joint" type="revolute">
+        <parent link="back_right_abad_link" />
+        <child link="back_right_hip_link" />
+        <origin xyz="0 -0.02 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
+    </joint>
+    <link name="back_right_knee_link">
+        <inertial>
+            <origin xyz="0 0 0" />
+            <mass value="0.3" />
+            <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.03" />
+        </inertial>
+        <visual>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.02 -0.15" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="0.3" radius="0.03" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="back_right_knee_joint" type="revolute">
+        <parent link="back_right_hip_link" />
+        <child link="back_right_knee_link" />
+        <origin xyz="0 -0.02 -0.3" rpy="0 0 0" />
         <axis xyz="0 1 0" />
         <limit effort="1.0" velocity="1.0" lower="-3.14" upper="3.14" />
     </joint>
