@@ -9,7 +9,7 @@ p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 # 시뮬레이션 환경 설정
-p.setGravity(0, 0, -9.8)
+
 plane_id = p.loadURDF("plane.urdf")  # 바닥면 추가
 
 # 카메라 위치 설정 (옆모습 보기)
@@ -21,7 +21,7 @@ camera_target_position = [0, 0, 1]  # 카메라가 바라볼 위치 (로봇 위�
 p.resetDebugVisualizerCamera(camera_distance, camera_yaw, camera_pitch, camera_target_position)
 
 # 로봇 모델 로드 (robot_model.urdf 파일)
-robot_id = p.loadURDF("robot_model.urdf", [0, 0, 0.7], useFixedBase=True)  # z축 이동을 허용하도록 로드
+robot_id = p.loadURDF("robot_model.urdf", [0, 0, 0.7], useFixedBase=False)  # z축 이동을 허용하도록 로드
 
 joints = {}
 joint_names = ['abad_joint', 'hip_joint', 'knee_joint']
@@ -61,7 +61,7 @@ theta_1 = 45
 theta_2 = 90
 l_1 = 0.3
 l_2 = 0.3
-DEFAULT_Y = 0.3 * (3 ** (1/2))
+DEFAULT_Y = l_1 * (3 ** (1/2))-0.02
 DEFAULT_X = 0
 Y_DIFF = 0.05
 MAX_Y = DEFAULT_Y - Y_DIFF
@@ -70,12 +70,26 @@ B1 = 0.05
 B2 = 0.02
 a = DEFAULT_X
 b = DEFAULT_Y
+step_time = 0.01 
 theta_1, theta_2 = cal(l_1, l_2, a, b)
 default_position_hip = -theta_1
 default_position_knee = theta_2
 
 target_position_hip = default_position_hip # 힙 관절의 초기 각도
 target_position_knee = default_position_knee # 무릎 관절의 초기 각도
+
+p.setGravity(0, 0, 0)
+# for i in range(240):
+#     for j in range(4):
+#                 p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[1]],
+#                                 controlMode=p.POSITION_CONTROL, targetPosition=target_position_hip)
+#                 p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[2]],
+#                                 controlMode=p.POSITION_CONTROL, targetPosition=target_position_knee)
+#                 p.setJointMotorControl2(bodyUniqueId=robot_id, jointIndex=joints[leg_prefixes[j]+'_'+joint_names[0]],
+#                             controlMode=p.POSITION_CONTROL, targetPosition=0)
+#     p.stepSimulation()
+#     time.sleep(2/240)
+p.setGravity(0, 0, -9.8)
 
 def box_step_forward():
     a_list = [0, -X_DIFF, -X_DIFF, 0]
@@ -120,7 +134,6 @@ def box_step_backward():
             time.sleep(1.0 / 2.0)
 
 def trot_forward(step):
-    step_time = 0.01  # 스텝 시간
     cycle_count = 20  # 한 번의 스텝을 나누는 횟수
 
     if step == 1:
@@ -197,7 +210,6 @@ def trot_forward(step):
             time.sleep(step_time)
 
 def trot_backward(step):
-    step_time = 0.01  # 스텝 시간
     cycle_count = 20  # 한 번의 스텝을 나누는 횟수
 
     if step == 1:
@@ -274,7 +286,6 @@ def trot_backward(step):
             time.sleep(step_time)
 
 def trot_left(step):
-    step_time = 0.01  # 스텝 시간
     cycle_count = 20  # 한 번의 스텝을 나누는 횟수
 
     if step == 1:
@@ -358,7 +369,6 @@ def trot_left(step):
                 p.stepSimulation()
             time.sleep(step_time)
 def trot_right(step):
-    step_time = 0.01  # 스텝 시간
     cycle_count = 20  # 한 번의 스텝을 나누는 횟수
 
     if step == 1:
